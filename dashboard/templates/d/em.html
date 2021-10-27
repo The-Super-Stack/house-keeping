@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p>di halama ini menjelaskan bahwa setiap user setelah login aka di check</p>
+{{ user }} <br>
+<div class="">
+    {% for job in jobs %}
+    <a href="{% url 'dash:emp-qr' job.pk %}">{{ job }}</a> <br>
+    {% endfor %}
+</div>
+</body>
+</html>

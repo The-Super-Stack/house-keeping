@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'dashboard',
     'api',
     'rest_framework',
+    'crispy_forms',
 
 ]
 
@@ -40,6 +41,10 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
+
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
+ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/login/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -83,7 +88,7 @@ DATABASES = {
         'NAME': join(BASE_DIR, 'db.sqlite3')
     }
 }
-
+    
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 

@@ -48,7 +48,7 @@ class WorkPlace(models.Model):
 
 
 class EmployeeManagement(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='emp_user', related_query_name='emp_user')
     nik = models.CharField(unique=True, verbose_name='NIK : ', max_length=255)
     is_employee = models.BooleanField(default=True)
     is_supervisor = models.BooleanField(default=False)
