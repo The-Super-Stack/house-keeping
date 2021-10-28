@@ -6,9 +6,15 @@
 </head>
 <body>
 <p>di halama ini menjelaskan bahwa setiap user setelah login aka di check</p>
-<form action="" method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
+    {% if employee %}
+        {% for emp in employee %}
+            <input type="checkbox" id="emp" name="emp" value="{{emp.id}}"> {{ emp }} <br>
+        {% endfor %}
+    {% endif %}
+    <br>
     <button>Save</button>
 </form>
 </body>

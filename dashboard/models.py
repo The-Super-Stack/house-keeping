@@ -5,6 +5,7 @@ from io import BytesIO
 from django.core.files import File
 from PIL import Image, ImageDraw
 from .utils import generate_code
+from django.utils.timezone import now
 
 gender_choices = [
     ('M', 'Male'),
@@ -52,7 +53,7 @@ class EmployeeManagement(models.Model):
     nik = models.CharField(unique=True, verbose_name='NIK : ', max_length=255)
     is_employee = models.BooleanField(default=True)
     is_supervisor = models.BooleanField(default=False)
-
+    supervisor = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, default='', null=True)
     shift = models.IntegerField(default=0)
     phone_number = models.CharField(max_length=255, verbose_name='nomor telepon : ')
     profile_img = models.FileField(upload_to='profile/')
@@ -67,10 +68,11 @@ class EmployeeManagement(models.Model):
 
 
 class AssignmentControl(models.Model):
-    assignment = models.ForeignKey(WorkPlace, on_delete=models.CASCADE, blank=True)
+    assignment = models.ForeignKey(WorkPlace, on_delete=models.CASCADE, blank=True, verbose_name='Tugas yang akan diberikan : ')
     access_permission = models.BooleanField(default=False)
     worker = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
-    estimated_time = models.IntegerField(default=0, verbose_name='lama waktu pengerjaan : ')
+    estimated_time = models.IntegerField(default=0, verbose_name='Lama waktu pengerjaan : ')
+    for_day = models.DateField(default=now(), verbose_name='Untuk dikerjakan pada tanggal : ')
     start_time = models.DateTimeField(blank=True, null=True)
     end_time = models.DateTimeField(blank=True, null=True)
     on_progress = models.BooleanField(default=False)

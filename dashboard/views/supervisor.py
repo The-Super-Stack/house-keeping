@@ -1,4 +1,5 @@
 from .main import *
+import time
 
 
 class CreateWorkPlace(CreateView):
@@ -24,8 +25,8 @@ class DashboardView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
-        employee = self.request.user.employeemanagement.is_employee
-        supervisor = self.request.user.employeemanagement.is_supervisor
+        employee = self.request.user.emp_user.is_employee
+        supervisor = self.request.user.emp_user.is_supervisor
         if employee and supervisor:
             stat = 'supervisor'
         else:
@@ -40,14 +41,20 @@ def create_job(request):
 
     if request.method == 'POST':
         form = CreateEmployeeJob(request.POST or None, request.FILES or None)
-        emp_list = request.POST.get('emp')
+        emp_list = request.POST.getlist('emp')
+        hm = len(emp_list)
+        print(hm)
         if form.is_valid():
+            est_time = form.cleaned_data['estimated_time']
+            assignment = form.cleaned_data['assignment']
             for employee in emp_list:
-                form.instance.user = employee
-                form.save()
+                job = AssignmentControl.objects.create(
+                    assignment=assignment, estimated_time=est_time, worker_id=int(employee)
+                )
+                job.save()
 
     context = {
         'employee': emp,
         'form': form,
     }
-    return render(request, '', context)
+    return render(request, 'd/form.html', context)

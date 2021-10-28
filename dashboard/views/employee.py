@@ -11,6 +11,10 @@ class EmployeeDashboard(ListView):
             worker=self.request.user
         )
 
+    @method_decorator(login_required(login_url='/accounts/login/'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(EmployeeDashboard, self).dispatch(request, *args, **kwargs)
+
 
 class UpdateJob(UpdateView):
     model = AssignmentControl

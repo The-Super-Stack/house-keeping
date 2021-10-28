@@ -7,6 +7,7 @@ urlpatterns = [
     path('', main.level_check, name='main'),
     path('Supervisor', sv.DashboardView.as_view(), name='home'),
     path('Supervisor/LokasiKerja', sv.CreateWorkPlace.as_view(), name='create-work'),
+    path('Supervisor/BerikanPekerjaan', sv.create_job, name='create-job'),
 ]
 
 urlpatterns += [
