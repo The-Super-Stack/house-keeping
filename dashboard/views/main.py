@@ -27,3 +27,37 @@ def level_check(request):
 
     logout(request)
     return redirect('/accounts/login/')
+
+
+def register_manual(request):
+    form = CreateMainUserForm()
+    e_form = UserExtendedForm()
+    if request.method == 'POST':
+        # get supervisor code
+        spv_code = request.POST.get('spv_code')
+        if spv_code:
+            get_spv = EmployeeManagement.objects.filter()
+            # if spv_code:
+        form = CreateMainUserForm(request.POST or None, request.FILES or None)
+        e_form = UserExtendedForm(request.POST or None, request.FILES or None)
+        # get data from form
+        username = form.cleaned_data['username']
+        password = request.POST.get('password')
+        email = form.cleaned_data['email']
+        f_name = form.cleaned_data['first_name']
+        l_name = form.cleaned_data['last_name']
+        if form.is_valid() and e_form.is_valid():
+            user = User.objects.create_user()
+            user.username = username
+            user.password = password
+            user.email = email
+            user.first_name = f_name
+            user.last_name = l_name
+            user.save()
+            e_form.instance.user = user
+
+    context = {
+        'form': form,
+        'e_form': e_form
+    }
+    return render(request, 'd/reg.html', context)

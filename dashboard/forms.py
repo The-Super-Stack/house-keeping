@@ -1,5 +1,6 @@
 from django import forms
 from .models import *
+from django.contrib.auth.forms import UserCreationForm
 
 
 class SetOnProgress(forms.ModelForm):
@@ -23,4 +24,20 @@ class CreateWorkPlaceForm(forms.ModelForm):
 class CreateEmployeeJob(forms.ModelForm):
     class Meta:
         model = AssignmentControl
-        fields = ['assignment', 'estimated_time']
+        fields = ['assignment', 'estimated_time', 'for_day']
+
+        widgets = {
+            'for_day': forms.DateInput(format='%d/%m/%Y', attrs={'type': 'date'})
+        }
+
+
+class CreateMainUserForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name']
+
+
+class UserExtendedForm(forms.ModelForm):
+    class Meta:
+        model = EmployeeManagement
+        fields = ['nik', 'profile_img', 'phone_number', 'gender']

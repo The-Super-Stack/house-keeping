@@ -13,7 +13,14 @@ class EmployeeDashboard(ListView):
 
     @method_decorator(login_required(login_url='/accounts/login/'))
     def dispatch(self, request, *args, **kwargs):
-        return super(EmployeeDashboard, self).dispatch(request, *args, **kwargs)
+        emp = self.request.user.emp_user.is_employee
+        spv = self.request.user.emp_user.is_supervisor
+        if emp and not spv:
+            return super(EmployeeDashboard, self).dispatch(request, *args, **kwargs)
+        elif emp and spv:
+            return redirect('dash:home')
+        logout(self.request)
+        return redirect('/accounts/login/')
 
 
 class UpdateJob(UpdateView):
@@ -46,9 +53,7 @@ class UpdateJob(UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         get_assignment = get_object_or_404(AssignmentControl, pk=self.kwargs['pk'])
-        if get_assignment.is_done:
-            return HttpResponseRedirect(reverse('dash:emp'))
-        elif not get_assignment.access_permission:
+        if get_assignment.is_done or not get_assignment.access_permission:
             return HttpResponseRedirect(reverse('dash:emp'))
         return super(UpdateJob, self).dispatch(request, *args, **kwargs)
 

@@ -4,8 +4,10 @@ import qrcode
 from io import BytesIO
 from django.core.files import File
 from PIL import Image, ImageDraw
-from .utils import generate_code
+from .utils import generate_code, spv_code_generator
 from django.utils.timezone import now
+from os import path, remove
+from django.conf import settings
 
 gender_choices = [
     ('M', 'Male'),
@@ -59,6 +61,7 @@ class EmployeeManagement(models.Model):
     profile_img = models.FileField(upload_to='profile/')
     gender = models.CharField(max_length=10, choices=gender_choices, default='X')
     status = models.ForeignKey(WorkingStatus, on_delete=models.CASCADE)
+    code = models.CharField(max_length=255, default='', verbose_name='kode spv')
 
     def __str__(self):
         if self.is_employee and self.is_supervisor:
@@ -66,13 +69,23 @@ class EmployeeManagement(models.Model):
         elif self.is_employee and not self.is_supervisor:
             return f"{self.user} just employee "
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None, *args, **kwargs):
+        self.code.save(spv_code_generator())
+        super(EmployeeManagement, self).save(*args, **kwargs)
+
+    def delete(self, using=None, keep_parents=False, *args, **kwargs):
+        remove(path.join(settings.MEDIA_ROOT, self.profile_img.name))
+        super().delete(*args, **kwargs)
+
 
 class AssignmentControl(models.Model):
-    assignment = models.ForeignKey(WorkPlace, on_delete=models.CASCADE, blank=True, verbose_name='Tugas yang akan diberikan : ')
+    assignment = models.ForeignKey(WorkPlace, on_delete=models.CASCADE, blank=True, verbose_name='Tugas yang akan diberikan : ')   # important
     access_permission = models.BooleanField(default=False)
-    worker = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
-    estimated_time = models.IntegerField(default=0, verbose_name='Lama waktu pengerjaan : ')
-    for_day = models.DateField(default=now(), verbose_name='Untuk dikerjakan pada tanggal : ')
+    given_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='spv', null=True, blank=True)  # important
+    worker = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)  # important
+    estimated_time = models.IntegerField(default=0, verbose_name='Lama waktu pengerjaan <small class='"text-muted"'> dalam menit </small> : ')  # important
+    for_day = models.DateField(verbose_name='Untuk dikerjakan pada tanggal : ')  # important
     start_time = models.DateTimeField(blank=True, null=True)
     end_time = models.DateTimeField(blank=True, null=True)
     on_progress = models.BooleanField(default=False)
@@ -87,3 +100,8 @@ class AssignmentControl(models.Model):
             return f"{self.assignment.naming()} has been cleaned {self.worker.username}"
         elif not self.is_done and not self.on_progress:
             return f"{self.assignment.naming()} will be cleaned {self.worker.username}"
+        
+    def delete(self, using=None, keep_parents=False, *args, **kwargs):
+        remove(path.join(settings.MEDIA_ROOT, self.img_before.name, self.img_after.name))
+        super().delete(*args, **kwargs)
+
