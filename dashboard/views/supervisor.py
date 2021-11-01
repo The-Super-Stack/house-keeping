@@ -58,20 +58,27 @@ def create_job(request):
     if request.method == 'POST':
         form = CreateEmployeeJob(request.POST or None, request.FILES or None)
         emp_list = request.POST.getlist('emp')
-        hm = len(emp_list)
-        print(hm)
+        print(emp_list)
         if form.is_valid():
             est_time = form.cleaned_data['estimated_time']
             assignment = form.cleaned_data['assignment']
             day = form.cleaned_data['for_day']
             for employee in emp_list:
+                get_worker = get_object_or_404(EmployeeManagement, pk=int(employee))
                 job = AssignmentControl.objects.create(
                     assignment=assignment, estimated_time=est_time,
-                    worker_id=int(employee), for_day=day,
-                    given_by=request.user
+                    worker=get_worker.user, for_day=day,
+                    given_by= request.user
                 )
                 job.save()
-        return redirect('dash:home')
+                get_list = AssignmentList.objects.filter(for_job=assignment)
+                for ass_list in get_list:
+                    list_control = AssignmentListControl.objects.create(
+                        assignment_control=job,
+                        assignment_list=ass_list
+                    )
+                    list_control.save()
+            return redirect('dash:home')
     context = {
         'employee': emp,
         'form': form,

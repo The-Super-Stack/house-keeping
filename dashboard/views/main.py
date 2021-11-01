@@ -5,7 +5,7 @@ from django.utils import timezone
 from ..forms import *
 from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponse
-from ..utils import generate_code
+from ..utils import generate_code, spv_code_generator
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -36,25 +36,31 @@ def register_manual(request):
         # get supervisor code
         spv_code = request.POST.get('spv_code')
         if spv_code:
-            get_spv = EmployeeManagement.objects.filter()
-            # if spv_code:
-        form = CreateMainUserForm(request.POST or None, request.FILES or None)
-        e_form = UserExtendedForm(request.POST or None, request.FILES or None)
-        # get data from form
-        username = form.cleaned_data['username']
-        password = request.POST.get('password')
-        email = form.cleaned_data['email']
-        f_name = form.cleaned_data['first_name']
-        l_name = form.cleaned_data['last_name']
-        if form.is_valid() and e_form.is_valid():
-            user = User.objects.create_user()
-            user.username = username
-            user.password = password
-            user.email = email
-            user.first_name = f_name
-            user.last_name = l_name
-            user.save()
-            e_form.instance.user = user
+            get_spv = EmployeeManagement.objects.filter(code=spv_code)
+            if get_spv:
+                spv = get_object_or_404(EmployeeManagement, code=spv_code)
+                if spv.is_employee and spv.is_supervisor:
+                    form = CreateMainUserForm(request.POST or None, request.FILES or None)
+                    e_form = UserExtendedForm(request.POST or None, request.FILES or None)
+                    """ get data from form """
+                    username = request.POST.get('username')
+                    password1 = request.POST.get('password1')
+                    password2 = request.POST.get('password2')
+                    email = request.POST.get('email')
+                    f_name = request.POST.get('first_name')
+                    l_name = request.POST.get('last_name')
+                    if password1 == password2:
+                        if form.is_valid() and e_form.is_valid():
+                            user = User.objects.create_user(username=username, password=password2)
+                            user.email = email
+                            user.first_name = f_name
+                            user.last_name = l_name
+                            user.save()
+                            e_form.instance.user = user
+                            e_form.instance.supervisor = spv.user
+                            e_form.instance.code = spv_code_generator()
+                            e_form.save()
+                            return redirect(settings.LOGIN_URL)
 
     context = {
         'form': form,

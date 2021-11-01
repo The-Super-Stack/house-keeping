@@ -30,7 +30,7 @@ class UpdateJob(UpdateView):
     template_name = 'd/form.html'
 
     def get_success_url(self):
-        return reverse('dash:emp')
+        return reverse('dash:emp-list')
 
     def get_form_class(self):
         get_assignment = get_object_or_404(AssignmentControl, pk=self.kwargs['pk'])
@@ -87,3 +87,26 @@ def qr_validating(request, pk):
             return HttpResponseRedirect(reverse('dash:emp-do', args=[pk]))
     context['this_ass'] = work
     return render(request, 'd/read.html', context)
+
+
+class MyJobDetail(DetailView):
+    model = AssignmentControl
+    template_name = 'd/job_detail.html'
+    query_pk_and_slug = True
+    pk_url_kwarg = 'pk'
+
+    def get_context_data(self, **kwargs):
+        context = super(MyJobDetail, self).get_context_data(**kwargs)
+        get_ass = get_object_or_404(AssignmentControl, pk=self.kwargs['pk'])
+        ass_lis = AssignmentListControl.objects.filter(assignment_control=get_ass)
+
+        context['ass_list'] = ass_lis
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        emp = self.request.user.emp_user.is_employee
+        spv = self.request.user.emp_user.is_supervisor
+        if emp and spv:
+            return redirect('dash:home')
+        if emp and not spv:
+            return super(MyJobDetail, self).dispatch(request, *args, **kwargs)

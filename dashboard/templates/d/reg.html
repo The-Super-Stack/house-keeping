@@ -8,16 +8,16 @@
 </head>
 <body>
 <p>di halama ini menjelaskan bahwa setiap user setelah login aka di check</p>
-<div class="container">
+<div class="container my-5 py-5">
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% load crispy_forms_tags %}
+        <label for="spv_code">SPV Code</label>
+        <div class="form-group">
+            <input type="text" name="spv_code" id="spv_code" class="form-control">
+        </div>
         {{ form | crispy }}
-        {% if employee %}
-            {% for emp in employee %}
-                <input type="checkbox" id="emp" name="emp" value="{{emp.id}}"> {{ emp }} <br>
-            {% endfor %}
-        {% endif %}
+        {{ e_form | crispy }}
         <br>
         <button>Save</button>
     </form>

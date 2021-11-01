@@ -50,6 +50,14 @@ class WorkPlace(models.Model):
         super().save(*args, **kwargs)
 
 
+class AssignmentList(models.Model):
+    title = models.CharField(max_length=255, verbose_name='list tugas : ')
+    for_job = models.ForeignKey(WorkPlace, on_delete=models.CASCADE, verbose_name='untuk kerjaan : ')
+
+    def __str__(self):
+        return f"{self.for_job.naming()} - {self.title} "
+        
+        
 class EmployeeManagement(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='emp_user', related_query_name='emp_user')
     nik = models.CharField(unique=True, verbose_name='NIK : ', max_length=255)
@@ -60,19 +68,14 @@ class EmployeeManagement(models.Model):
     phone_number = models.CharField(max_length=255, verbose_name='nomor telepon : ')
     profile_img = models.FileField(upload_to='profile/')
     gender = models.CharField(max_length=10, choices=gender_choices, default='X')
-    status = models.ForeignKey(WorkingStatus, on_delete=models.CASCADE)
-    code = models.CharField(max_length=255, default='', verbose_name='kode spv')
+    status = models.ForeignKey(WorkingStatus, on_delete=models.CASCADE, default=2)
+    code = models.CharField(max_length=255, default='', verbose_name='kode spv', blank=True)
 
     def __str__(self):
         if self.is_employee and self.is_supervisor:
             return f"{self.user} is supervisor "
         elif self.is_employee and not self.is_supervisor:
             return f"{self.user} just employee "
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None, *args, **kwargs):
-        self.code.save(spv_code_generator())
-        super(EmployeeManagement, self).save(*args, **kwargs)
 
     def delete(self, using=None, keep_parents=False, *args, **kwargs):
         remove(path.join(settings.MEDIA_ROOT, self.profile_img.name))
@@ -91,7 +94,7 @@ class AssignmentControl(models.Model):
     on_progress = models.BooleanField(default=False)
     is_done = models.BooleanField(default=False)
     img_before = models.FileField(upload_to='assignment/before/', blank=True)
-    img_after = models.FileField(upload_to='assignment/after/', blank=True)
+    img_after = models.FileField(upload_to= 'assignment/after/', blank=True)
 
     def __str__(self):
         if self.on_progress:
@@ -105,3 +108,11 @@ class AssignmentControl(models.Model):
         remove(path.join(settings.MEDIA_ROOT, self.img_before.name, self.img_after.name))
         super().delete(*args, **kwargs)
 
+
+class AssignmentListControl(models.Model):
+    is_done = models.BooleanField(default=False)
+    assignment_control = models.ForeignKey(AssignmentControl, on_delete=models.CASCADE)
+    assignment_list = models.ForeignKey(AssignmentList, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.assignment_control.worker} - {self.assignment_list}"
