@@ -30,7 +30,7 @@ class UpdateJob(UpdateView):
     template_name = 'd/form.html'
 
     def get_success_url(self):
-        return reverse('dash:emp-list')
+        return reverse('dash:emp-list', args=[self.kwargs['pk']])
 
     def get_form_class(self):
         get_assignment = get_object_or_404(AssignmentControl, pk=self.kwargs['pk'])
@@ -63,7 +63,7 @@ def do_job(request, pk):
     if request.method == 'POST':
         if get_assignment.on_progress:
             get_assignment.end_time = timezone.now()
-            get_assignment.is_done = True
+            get_assignment.is_done = True   
             get_assignment.on_progress = False
             get_assignment.save()
         elif get_assignment.is_done:
@@ -78,6 +78,8 @@ def do_job(request, pk):
 def qr_validating(request, pk):
     context = {}
     get_assignment = get_object_or_404(AssignmentControl, pk=pk)
+    if get_assignment.is_done:
+        return redirect('dash:emp')
     work = get_assignment.assignment.qr_code
     if request.method == 'POST':
         qr_code = request.POST.get('qr_c')
@@ -94,19 +96,36 @@ class MyJobDetail(DetailView):
     template_name = 'd/job_detail.html'
     query_pk_and_slug = True
     pk_url_kwarg = 'pk'
+    context_object_name = 'ass_con'
 
     def get_context_data(self, **kwargs):
         context = super(MyJobDetail, self).get_context_data(**kwargs)
         get_ass = get_object_or_404(AssignmentControl, pk=self.kwargs['pk'])
-        ass_lis = AssignmentListControl.objects.filter(assignment_control=get_ass)
+        ass_list = AssignmentListControl.objects.filter(assignment_control=get_ass)
 
-        context['ass_list'] = ass_lis
+        context['ass_list'] = ass_list
         return context
 
     def dispatch(self, request, *args, **kwargs):
+        get_assignment = get_object_or_404(AssignmentControl, pk=self.kwargs['pk'])
+        if get_assignment.is_done:
+            return redirect('dash:emp')
         emp = self.request.user.emp_user.is_employee
         spv = self.request.user.emp_user.is_supervisor
         if emp and spv:
             return redirect('dash:home')
         if emp and not spv:
             return super(MyJobDetail, self).dispatch(request, *args, **kwargs)
+
+
+def set_list_to_done(request, pk):
+    get_list = request.POST.getlist('control')
+    print(get_list)
+    if get_list:
+        for element in get_list:
+            control = get_object_or_404(AssignmentListControl, pk=int(element))
+            control.is_done = True
+            print(control)
+            control.save()
+
+    return HttpResponseRedirect(reverse('dash:emp-do', args=[pk]))

@@ -18,6 +18,7 @@ urlpatterns += [
     path('Employee', emp.EmployeeDashboard.as_view(), name='emp'),
     path('Employee/<int:pk>/', emp.qr_validating, name='emp-qr'),
     path('Employee/<int:pk>/list', emp.MyJobDetail.as_view(), name='emp-list'),
+    path('Employee/<int:pk>/done', emp.set_list_to_done, name='emp-done'),
     path('Employee/<int:pk>', emp.UpdateJob.as_view(), name='emp-do'),
 ]
 

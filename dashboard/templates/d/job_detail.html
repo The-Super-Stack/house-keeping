@@ -5,9 +5,14 @@
     <title>detail job for me</title>
 </head>
 <body>
+<form action="{% url 'dash:emp-done'  ass_con.pk %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for list in ass_list %}
+    <input type="checkbox" name="control" id="control" value="{{ list.pk }}"> {{list}} <br>
+    {% endfor %}
+    <br>
+    <button>save</button>
+</form>
 
-{% for list in ass_list %}
-{{ list }} <br>
-{% endfor %}
 </body>
 </html>
