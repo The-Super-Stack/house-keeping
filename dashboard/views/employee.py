@@ -42,19 +42,26 @@ class UpdateJob(UpdateView):
 
     def form_valid(self, form):
         get_assignment = get_object_or_404(AssignmentControl, pk=self.kwargs['pk'])
-        if get_assignment.on_progress:
-            form.instance.is_done = True
-            form.instance.on_progress = False
-            form.instance.end_time = timezone.now()
-        else:
-            form.instance.on_progress = True
-            form.instance.start_time = timezone.now()
+        file_before = self.request.FILES.get('img_before')
+        file_after = self.request.FILES.get('img_after')
+        if not file_after and not file_before:
+            return HttpResponseRedirect(reverse('dash:emp-do', args=[self.kwargs['pk']]))
+        elif not file_after or not file_before:
+            if get_assignment.on_progress:
+                form.instance.is_done = True
+                form.instance.on_progress = False
+                form.instance.end_time = timezone.now()
+            else:
+                form.instance.on_progress = True
+                form.instance.start_time = timezone.now()
         return super(UpdateJob, self).form_valid(form)
 
     def dispatch(self, request, *args, **kwargs):
         get_assignment = get_object_or_404(AssignmentControl, pk=self.kwargs['pk'])
-        if get_assignment.is_done or not get_assignment.access_permission:
+        if get_assignment.is_done:
             return HttpResponseRedirect(reverse('dash:emp'))
+        elif not get_assignment.access_permission:
+            return HttpResponseRedirect(reverse('dash:emp-qr', args=[self.kwargs['pk']]))
         return super(UpdateJob, self).dispatch(request, *args, **kwargs)
 
 
@@ -108,13 +115,15 @@ class MyJobDetail(DetailView):
 
     def dispatch(self, request, *args, **kwargs):
         get_assignment = get_object_or_404(AssignmentControl, pk=self.kwargs['pk'])
-        if get_assignment.is_done:
-            return redirect('dash:emp')
         emp = self.request.user.emp_user.is_employee
         spv = self.request.user.emp_user.is_supervisor
+        if get_assignment.is_done:
+            return redirect('dash:emp')
+        elif not get_assignment.access_permission:
+            return HttpResponseRedirect(reverse('dash:emp-qr', args=[self.kwargs['pk']]))
         if emp and spv:
             return redirect('dash:home')
-        if emp and not spv:
+        elif emp and not spv:
             return super(MyJobDetail, self).dispatch(request, *args, **kwargs)
 
 

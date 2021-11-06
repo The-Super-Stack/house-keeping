@@ -5,7 +5,9 @@ app_name = 'dash'
 
 urlpatterns = [
     path('', main.level_check, name='main'),
-    path('Register', main.register_manual, name='manual-registering')
+    path('Register', main.register_manual, name='manual-registering'),
+
+    path('delete', sv.delete_all_assignment_control, name='delete-all'),
 ]
 
 urlpatterns += [

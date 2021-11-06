@@ -68,7 +68,7 @@ def create_job(request):
                 job = AssignmentControl.objects.create(
                     assignment=assignment, estimated_time=est_time,
                     worker=get_worker.user, for_day=day,
-                    given_by= request.user
+                    given_by=request.user
                 )
                 job.save()
                 get_list = AssignmentList.objects.filter(for_job=assignment)
@@ -84,3 +84,14 @@ def create_job(request):
         'form': form,
     }
     return render(request, 'd/form.html', context)
+
+
+def delete_all_assignment_control(request):
+    dataset = AssignmentControl.objects.all()
+    dataset_list = AssignmentListControl.objects.all()
+    if request.method == 'POST':
+        for data in dataset:
+            data.delete()
+        for lst in dataset_list:
+            lst.delete()
+    return redirect('dash:home')

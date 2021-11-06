@@ -14,5 +14,10 @@
 {% for job in jobs %}
 {{ job }} <br>
 {% endfor %}
+<br> <br>
+<form action="{% url 'dash:delete-all' %}" method="post">
+    {% csrf_token %}
+    <button>delete</button>
+</form>
 </body>
 </html>

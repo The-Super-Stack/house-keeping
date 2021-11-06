@@ -6,7 +6,7 @@ from django.core.files import File
 from PIL import Image, ImageDraw
 from .utils import generate_code, spv_code_generator
 from django.utils.timezone import now
-from os import path, remove
+from os import remove, path
 from django.conf import settings
 
 gender_choices = [
@@ -56,8 +56,8 @@ class AssignmentList(models.Model):
 
     def __str__(self):
         return f"{self.for_job.naming()} - {self.title} "
-        
-        
+
+
 class EmployeeManagement(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='emp_user', related_query_name='emp_user')
     nik = models.CharField(unique=True, verbose_name='NIK : ', max_length=255)
@@ -83,7 +83,7 @@ class EmployeeManagement(models.Model):
 
 
 class AssignmentControl(models.Model):
-    assignment = models.ForeignKey(WorkPlace, on_delete=models.CASCADE, blank=True, verbose_name='Tugas yang akan diberikan : ')   # important
+    assignment = models.ForeignKey(WorkPlace, on_delete=models.CASCADE, blank=True, verbose_name='Tugas yang akan diberikan : ')  # important
     access_permission = models.BooleanField(default=False)
     given_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='spv', null=True, blank=True)  # important
     worker = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)  # important
@@ -94,7 +94,7 @@ class AssignmentControl(models.Model):
     on_progress = models.BooleanField(default=False)
     is_done = models.BooleanField(default=False)
     img_before = models.FileField(upload_to='assignment/before/', blank=True)
-    img_after = models.FileField(upload_to= 'assignment/after/', blank=True)
+    img_after = models.FileField(upload_to='assignment/after/', blank=True)
 
     def __str__(self):
         if self.on_progress:
@@ -103,9 +103,10 @@ class AssignmentControl(models.Model):
             return f"{self.assignment.naming()} has been cleaned {self.worker.username}"
         elif not self.is_done and not self.on_progress:
             return f"{self.assignment.naming()} will be cleaned {self.worker.username}"
-        
+
     def delete(self, using=None, keep_parents=False, *args, **kwargs):
-        remove(path.join(settings.MEDIA_ROOT, self.img_before.name, self.img_after.name))
+        remove(path.join(settings.MEDIA_ROOT, self.img_before.name))
+        remove(path.join(settings.MEDIA_ROOT, self.img_after.name))
         super().delete(*args, **kwargs)
 
 
