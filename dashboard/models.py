@@ -4,7 +4,7 @@ import qrcode
 from io import BytesIO
 from django.core.files import File
 from PIL import Image, ImageDraw
-from .utils import generate_code, spv_code_generator
+from .utils import generate_code, spv_code_generator, assignment_code
 from django.utils.timezone import now
 from os import remove, path
 from django.conf import settings
@@ -69,7 +69,7 @@ class EmployeeManagement(models.Model):
     profile_img = models.FileField(upload_to='profile/')
     gender = models.CharField(max_length=10, choices=gender_choices, default='X')
     status = models.ForeignKey(WorkingStatus, on_delete=models.CASCADE, default=2)
-    code = models.CharField(max_length=255, default='', verbose_name='kode spv', blank=True)
+    code = models.CharField(max_length=255, default=spv_code_generator(), verbose_name='kode spv', blank=True)
 
     def __str__(self):
         if self.is_employee and self.is_supervisor:
@@ -84,6 +84,7 @@ class EmployeeManagement(models.Model):
 
 class AssignmentControl(models.Model):
     assignment = models.ForeignKey(WorkPlace, on_delete=models.CASCADE, blank=True, verbose_name='Tugas yang akan diberikan : ')  # important
+    uid = models.SlugField(max_length=255, verbose_name='unique_id')
     access_permission = models.BooleanField(default=False)
     given_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='spv', null=True, blank=True)  # important
     worker = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)  # important
@@ -93,8 +94,8 @@ class AssignmentControl(models.Model):
     end_time = models.DateTimeField(blank=True, null=True)
     on_progress = models.BooleanField(default=False)
     is_done = models.BooleanField(default=False)
-    img_before = models.FileField(upload_to='assignment/before/', blank=True)
-    img_after = models.FileField(upload_to='assignment/after/', blank=True)
+    img_before = models.FileField(upload_to='assignment/before/', blank=True, null=True)
+    img_after = models.FileField(upload_to='assignment/after/', blank=True, null=True)
 
     def __str__(self):
         if self.on_progress:
@@ -105,8 +106,10 @@ class AssignmentControl(models.Model):
             return f"{self.assignment.naming()} will be cleaned {self.worker.username}"
 
     def delete(self, using=None, keep_parents=False, *args, **kwargs):
-        remove(path.join(settings.MEDIA_ROOT, self.img_before.name))
-        remove(path.join(settings.MEDIA_ROOT, self.img_after.name))
+        if self.img_before:
+            remove(path.join(settings.MEDIA_ROOT, self.img_before.name))
+        if self.img_after:
+            remove(path.join(settings.MEDIA_ROOT, self.img_after.name))
         super().delete(*args, **kwargs)
 
 

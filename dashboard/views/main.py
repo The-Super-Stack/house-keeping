@@ -5,7 +5,7 @@ from django.utils import timezone
 from ..forms import *
 from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponse
-from ..utils import generate_code, spv_code_generator
+from ..utils import generate_code, spv_code_generator, assignment_code
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache

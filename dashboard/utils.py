@@ -16,3 +16,11 @@ def spv_code_generator():
     raw_password = letters + num
     password = ''.join(random.sample(raw_password, 8))
     return password
+
+
+def assignment_code():
+    letters = string.ascii_letters
+    num = '0123456789'
+    raw_password = letters + num
+    password = ''.join(random.sample(raw_password, 12))
+    return password
