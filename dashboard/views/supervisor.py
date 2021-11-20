@@ -68,7 +68,7 @@ def create_job(request):
                 job = AssignmentControl.objects.create(
                     assignment=assignment, estimated_time=est_time,
                     worker=get_worker.user, for_day=day,
-                    given_by=request.user, assignment_unique_id=assignment_code()
+                    given_by=request.user, uid=assignment_code()
                 )
                 job.save()
                 get_list = AssignmentList.objects.filter(for_job=assignment)

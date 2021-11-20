@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h3>Common</h3>
+<p>
+    1 "/login"
+</p>
+<br>
+<h3>Employee Endpoint</h3>
+<p>
+    1. "/all-employee" its return all registered employees <br>
+    available query : <code>nik=&lt;nik-like-queries&gt;</code> and <code>ph=&lt;phone_number&gt;</code>
+</p>
+<p>
+    2. "/assignment-control" its return all the employee assignment. use query to get the assignment <br>
+    available query : <code>wr=&lt;int:user_id&gt;</code>
+</p>
+<p>
+    3. "/qr-validating/&lt;uid&gt;" will checked the assignment is not none. in this endpoint you will send a json to checked it is valid or not <br>
+    json you must send {"code": "&lt;work_place_qr_decrypted&gt;"}
+
+</p>
+<p>
+    4. "/assignment-control/list/&lt;uid&gt;" its return the detail of the assignment there is no post query. in this endpoint the only available is POST
+    <br>
+    so you must send the json like <br>
+    <code>
+        { <br>
+        &nbsp; "id": [**&lt;id&gt;], <br>
+        &nbsp; "is_done": [**true||false] <br>
+        }
+
+    </code>
+</p>
+<p>
+    5. "/assignment-control/img/&lt;uid&gt;" this endpoint used for upload the img_before and img_after. use PUT method to send the image
+</p>
+<br>
+<h3>Supervisor Endpoint</h3>
+<p>
+    1. "/supervisor" it shows the list of assignment for the downline(employee/ob) <br>
+    to display the list, use the available Query <br>
+    available query : ?me=&lt;int:id&gt; <br>
+    in this endpoint, you can send post data to the server. please send the json like this : <br>
+    { <br>
+    "assignment": assignment-id <br>
+	"date":" year-month-date", <br>
+	"time":time-in-minutes-dont-use-single-quote-or-double-quote, <br>
+	"employee":[**employee-id in list] <br>
+    }
+</p>
+<p>
+    2. "/supervisor/work-place" only get the data. no post. admin has created. take the id.
+</p>
+<p>
+    3. "/supervisor/all-employee" it returns all the employee not the supervisor. take the employee id. no post.
+</p>
+</body>
+</html>

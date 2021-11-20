@@ -8,6 +8,7 @@ from .utils import generate_code, spv_code_generator, assignment_code
 from django.utils.timezone import now
 from os import remove, path
 from django.conf import settings
+import datetime
 
 gender_choices = [
     ('M', 'Male'),
@@ -111,6 +112,24 @@ class AssignmentControl(models.Model):
         if self.img_after:
             remove(path.join(settings.MEDIA_ROOT, self.img_after.name))
         super().delete(*args, **kwargs)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None, *args, **kwargs):
+        if not self.img_before:
+            self.on_progress = False
+        elif self.img_before:
+            self.start_time = datetime.datetime.utcnow()
+            self.on_progress = True
+
+        if not self.img_after:
+            self.is_done = False
+        elif self.img_after:
+            self.is_done = True
+            self.on_progress = False
+            self.end_time = datetime.datetime.utcnow()
+        super().save(*args, **kwargs)
+
+    def how_long(self):
+        return f"{self.end_time - self.start_time}"
 
 
 class AssignmentListControl(models.Model):

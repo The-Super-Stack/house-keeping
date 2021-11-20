@@ -1,31 +1,4 @@
-from django.shortcuts import render, get_object_or_404
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, renderer_classes
-from ..serializers import *
-from django.db.models import Q as __
-from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
-from rest_framework import status
-
-
-@api_view(['GET'])
-# @renderer_classes([JSONRenderer])
-def all_employee(request):
-    emp = EmployeeManagement.objects.all()
-    serializer = EmployeeSerializer(emp, many=True)
-
-    if request.GET:
-        nik = request.GET.get('nik')
-        phone = request.GET.get('ph')
-        if nik or phone:
-            if nik:
-                emp = emp.filter(__(nik__icontains=nik))
-            elif phone:
-                emp = emp.filter(phone_number=phone)
-        elif phone and nik:
-            emp = emp.filter(__(nik__icontains=nik), phone_number=phone)
-
-        serializer = EmployeeSerializer(emp, many=True)
-    return Response(serializer.data)
+from .main import *
 
 
 @api_view(['GET'])
@@ -37,7 +10,7 @@ def assignment_control(request):
     return Response(serializer.data)
 
 
-@api_view(['GET', 'PUT', 'POST'])
+@api_view(['GET', 'POST'])
 def qr_validating(request, uid):
     try:
         assignment = get_object_or_404(AssignmentControl, uid=uid)
@@ -46,6 +19,8 @@ def qr_validating(request, uid):
 
     if request.method == 'GET':
         serializer = AssignmentSerializer(assignment, many=False)
+        if not assignment.access_permission:
+            return Response(status.HTTP_406_NOT_ACCEPTABLE)
         return Response(serializer.data)
 
     elif request.method == 'POST':
@@ -57,12 +32,12 @@ def qr_validating(request, uid):
         serializer = AssignmentSerializer(assignment, many=False)
         return Response(serializer.data, status.HTTP_201_CREATED)
 
-    elif request.method == 'PUT':
-        serializer = AssignmentSerializer(assignment, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+    # elif request.method == 'PUT':
+    #     serializer = AssignmentSerializer(assignment, data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data)
+    #     return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT'])
@@ -76,6 +51,7 @@ def img_upload(request, uid):
         serializer = AssignmentSerializer(assignment, data=request.data)
         if serializer.is_valid():
             serializer.save()
+
             return Response(serializer.data)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
@@ -111,4 +87,3 @@ def assignment_list_detail(request, uid):
 
         serializer = ListControlSerializer(dataset, many=True)
         return Response(serializer.data)
-
