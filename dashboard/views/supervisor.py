@@ -1,3 +1,5 @@
+import datetime
+
 from .main import *
 import time
 
@@ -95,3 +97,25 @@ def delete_all_assignment_control(request):
         for lst in dataset_list:
             lst.delete()
     return redirect('dash:home')
+
+
+class CreateInvitationLink(CreateView):
+    model = InvitationLink
+    http_method_names = ['post']
+    form_class = CreateLinkForms
+
+    def get_success_url(self):
+        return reverse('dash:emp')
+
+    def form_valid(self, form):
+        user = self.request.user
+        valid_until = timezone.now() + datetime.timedelta(1)
+        form.instance.link = invitation_code()
+        form.instance.spv = user
+        form.instance.valid_until = valid_until
+        return super(CreateInvitationLink, self).form_valid(form)
+
+    @method_decorator(login_required(login_url='accounts/login/'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(CreateInvitationLink, self).dispatch(request, *args, **kwargs)
+

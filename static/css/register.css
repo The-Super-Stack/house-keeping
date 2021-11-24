@@ -1,0 +1,38 @@
+body {
+    background-image: url("https://res.cloudinary.com/dci1eujqw/image/upload/v1616769558/Codepen/waldemar-brandt-aThdSdgx0YM-unsplash_cnq4sb.jpg");
+    background-repeat: no-repeat, repeat;
+    background-position: center; /* Center the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
+    padding-top: 50px;
+}
+
+.login-form {
+    background: #1a11117a;
+    margin-top: 150px;
+    margin-bottom: 150px;
+    padding: 100px;
+    border-radius: 50px;
+    color: white;
+    box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+}
+
+.login-heading {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#hint_id_username {
+    color: white !important;
+}
+
+#hint_id_password1{
+    color: white !important;
+}
+
+#hint_id_password2{
+    color: white !important;
+}
+
+.btn-primary {
+    width: 100%;
+}

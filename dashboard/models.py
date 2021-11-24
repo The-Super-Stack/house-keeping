@@ -139,3 +139,12 @@ class AssignmentListControl(models.Model):
 
     def __str__(self):
         return f"{self.assignment_control.worker} - {self.assignment_list}"
+
+
+class InvitationLink(models.Model):
+    link = models.SlugField(max_length=255, unique=True)
+    valid_until = models.DateTimeField()
+    spv = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.link

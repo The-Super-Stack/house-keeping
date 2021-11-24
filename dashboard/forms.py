@@ -34,10 +34,16 @@ class CreateEmployeeJob(forms.ModelForm):
 class CreateMainUserForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2']
+        fields = ['username', 'email', 'first_name', 'last_name']
 
 
 class UserExtendedForm(forms.ModelForm):
     class Meta:
         model = EmployeeManagement
         fields = ['nik', 'profile_img', 'phone_number', 'gender']
+
+
+class CreateLinkForms(forms.ModelForm):
+    class Meta:
+        model = InvitationLink
+        fields = '__all__'

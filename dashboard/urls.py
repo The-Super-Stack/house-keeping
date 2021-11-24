@@ -5,8 +5,8 @@ app_name = 'dash'
 
 urlpatterns = [
     path('', main.level_check, name='main'),
-    path('Register', main.register_manual, name='manual-registering'),
-
+    path('is-invited-you/<slug:link>', main.invitation_registering, name='manual-registering'),
+    path('Registered', main.LandingPage.as_view(), name='registered'),
     path('delete', sv.delete_all_assignment_control, name='delete-all'),
 ]
 

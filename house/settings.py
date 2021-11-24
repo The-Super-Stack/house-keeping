@@ -11,7 +11,7 @@ BASE_DIR = dirname(dirname(abspath(__file__)))
 SECRET_KEY = 'django-insecure-u$om-6%86(n#uf-pf0@!#t#tdbxypzsh+xy6+44e*v@z_ym3=7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -124,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Jakarta'
 
 USE_I18N = True
 
