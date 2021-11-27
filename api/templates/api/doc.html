@@ -5,6 +5,14 @@
     <title>Title</title>
 </head>
 <body>
+<h3>Note</h3>
+<p>
+    1. registering an account must be via website.
+</p>
+<p>
+    2. to open invitation link, please send data to landing "&lt;host_name&gt;?link=&lt;link_code&gt;"
+</p>
+<br>
 <h3>Common</h3>
 <p>
     1. "/login" for login endpoint and get the jwt token.
@@ -64,6 +72,9 @@
 </p>
 <p>
     3. "/supervisor/all-employee" it returns all the employee not the supervisor. take the employee id. no post.
+</p>
+<p>
+    4. "/supervisor/links" it will show all the owned link by each spv's. <br> for displaying the data use query parameter. "?spv=&lt;id&gt;" -- like 1 2 or 3
 </p>
 </body>
 </html>
