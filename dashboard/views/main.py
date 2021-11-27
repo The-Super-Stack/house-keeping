@@ -76,17 +76,20 @@ class LandingPage(TemplateView):
 
 
 def invitation_registering(request, link):
-    get_link = get_object_or_404(InvitationLink, link=link)
+    get_link = InvitationLink.objects.filter(link=link)
     e_form = UserExtendedForm()
     form = CreateMainUserForm()
+    if not get_link:
+        return redirect('')
+
+    get_link = get_object_or_404(InvitationLink, link=link)
     link_time = get_link.valid_until
     nowadays = datetime.datetime.now()
     time_now = pytz.utc.localize(nowadays)
-    if not get_link:
-        return redirect('')
-    elif not time_now <= link_time:
+    opened = True
+    if not time_now <= link_time:
         messages.warning(request, "Form Ini sudah tidak menerima respon")
-
+        opened = False
     if request.method == 'POST':
         """ get supervisor code """
         the_spv = get_link.spv
@@ -115,6 +118,7 @@ def invitation_registering(request, link):
 
     context = {
         'form': form,
-        'e_form': e_form
+        'e_form': e_form,
+        'open': opened
     }
     return render(request, 'd/reg.html', context)

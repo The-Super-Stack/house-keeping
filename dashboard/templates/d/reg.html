@@ -15,6 +15,7 @@
             <div class="row">
                 <div class="col-md-8 offset-md-2">
                     <div class="login-form">
+                        {% if open %}
                         <form enctype="multipart/form-data" method="POST">
                             {% load crispy_forms_tags %}
                             {% csrf_token %}
@@ -22,6 +23,13 @@
                             {{ e_form | crispy }}
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
+                        {% else %}
+                            {% if messages %}
+                                {% for msg in messages %}
+                                <h1 class="text-center">{{ msg }}</h1>
+                                {% endfor %}
+                            {% endif %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -44,13 +52,5 @@
             // });
 
         </script>
-        {% if messages %}
-            {% for msg in messages %}
-        <script>
-            alert('{{ msg }}');
-            location.href = '/accounts/login/'
-        </script>
-            {% endfor %}
-        {% endif %}
     </body>
 </html>
