@@ -34,7 +34,11 @@ class DashboardView(ListView):
             stat = 'supervisor'
         else:
             stat = 'employee'
+
+        inv = InvitationLink.objects.all()
+
         context['stat'] = stat
+        context['link'] = inv
         return context
 
     def get_queryset(self):
@@ -101,7 +105,7 @@ def delete_all_assignment_control(request):
 
 class CreateInvitationLink(CreateView):
     model = InvitationLink
-    http_method_names = ['post']
+    template_name = 'd/reg.html'
     form_class = CreateLinkForms
 
     def get_success_url(self):
@@ -115,7 +119,15 @@ class CreateInvitationLink(CreateView):
         form.instance.valid_until = valid_until
         return super(CreateInvitationLink, self).form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super(CreateInvitationLink, self).get_context_data(**kwargs)
+        opened = True
+        context['open'] = opened
+        return context
+
     @method_decorator(login_required(login_url='accounts/login/'))
     def dispatch(self, request, *args, **kwargs):
         return super(CreateInvitationLink, self).dispatch(request, *args, **kwargs)
+
+
 

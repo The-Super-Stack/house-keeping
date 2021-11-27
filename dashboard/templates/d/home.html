@@ -19,5 +19,16 @@
     {% csrf_token %}
     <button>delete</button>
 </form>
+
+<br> <br>
+{% for inv in link %}
+    {{ inv }} | {{ inv.status_print }} <br>
+{% endfor %}
+<br>
+<br>
+<form action="{% url 'dash:links' %}" method="post">
+    {% csrf_token %}
+    <button> Get new Link</button>
+</form>
 </body>
 </html>

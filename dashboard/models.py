@@ -8,7 +8,7 @@ from .utils import generate_code, spv_code_generator, assignment_code
 from django.utils.timezone import now
 from os import remove, path
 from django.conf import settings
-import datetime
+import datetime, pytz
 
 gender_choices = [
     ('M', 'Male'),
@@ -142,9 +142,16 @@ class AssignmentListControl(models.Model):
 
 
 class InvitationLink(models.Model):
-    link = models.SlugField(max_length=255, unique=True)
-    valid_until = models.DateTimeField()
-    spv = models.ForeignKey(User, on_delete=models.CASCADE)
+    link = models.SlugField(max_length=255, unique=True, blank=True)
+    valid_until = models.DateTimeField(blank=True)
+    spv = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
 
     def __str__(self):
         return self.link
+
+    def status_print(self):
+        due_date = self.valid_until
+        date_now = pytz.utc.localize(datetime.datetime.now())
+        if date_now <= due_date:
+            return 'Active'
+        return 'Expired'

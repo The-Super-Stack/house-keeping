@@ -1,6 +1,8 @@
 from .main import *
 from django.db.models import Q as __
 from django.contrib.auth.models import User
+import datetime, pytz
+from dashboard.utils import invitation_code
 
 
 @api_view(['GET'])
@@ -66,3 +68,30 @@ class WorkPlaceEndPoint(APIView):
         wp = WorkPlace.objects.all()
         serializer = WorkPlaceSerializer(wp, many=True)
         return Response(serializer.data)
+
+
+class CreateInvitationLinkAPI(APIView):
+    def get(self, format=None):
+        spv = self.request.GET.get('spv')
+        if not spv:
+            return Response(status.HTTP_403_FORBIDDEN)
+
+        time_now = pytz.utc.localize(datetime.datetime.now())
+        links = InvitationLink.objects.filter(spv__id=spv, valid_until__gte=time_now)
+        serializer = InvitationLinkSerializer(links, many=True)
+        return Response(serializer.data)
+
+    def post(self, format=None):
+        spv = self.request.GET.get('spv')
+        if not spv:
+            return Response(status.HTTP_403_FORBIDDEN)
+        get_user = get_object_or_404(User, pk=spv)
+        valid = timezone.now() + datetime.timedelta(1)
+        link = InvitationLink.objects.create(
+            valid_until=valid, link=invitation_code(), spv=get_user
+        )
+        link.save()
+
+        links = InvitationLink.objects.filter(spv__id=spv, valid_until__gte=timezone.now())
+        serializer = InvitationLinkSerializer(links, many=True)
+        return Response(serializer.data, status.HTTP_201_CREATED)

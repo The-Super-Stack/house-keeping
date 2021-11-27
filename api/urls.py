@@ -24,4 +24,5 @@ urlpatterns += [
     path('supervisor', spv.AssignmentListOnMine.as_view(), name='spv'),
     path('supervisor/all-employee', spv.all_employee, name='all_emp'),
     path('supervisor/work-place', spv.WorkPlaceEndPoint.as_view(), name='work-place'),
+    path('supervisor/links', spv.CreateInvitationLinkAPI.as_view(), name='links'),
 ]

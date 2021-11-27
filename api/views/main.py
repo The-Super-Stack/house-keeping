@@ -5,9 +5,10 @@ from ..serializers import *
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework import status
 from rest_framework.views import APIView
-from dashboard.utils import assignment_code
+from dashboard.utils import invitation_code
 from rest_framework.exceptions import AuthenticationFailed
 import jwt, datetime
+from django.utils import timezone
 
 
 def documentation(request):

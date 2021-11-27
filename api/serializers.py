@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from dashboard.models import EmployeeManagement, AssignmentControl, AssignmentListControl, WorkPlace, AssignmentList, User
+from dashboard.models import EmployeeManagement, AssignmentControl, AssignmentListControl, WorkPlace, AssignmentList, User, InvitationLink
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -35,4 +35,10 @@ class WorkPlaceSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+        fields = '__all__'
+
+
+class InvitationLinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvitationLink
         fields = '__all__'
