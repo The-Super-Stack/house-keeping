@@ -14,8 +14,14 @@ from django.contrib import messages
 import datetime, pytz
 
 
-@login_required(login_url='/accounts/login/')
 def level_check(request):
+    link = request.GET.get('link')
+    if link:
+        linked = InvitationLink.objects.filter(link=link)
+        if linked:
+            return HttpResponseRedirect(reverse('dash:manual-registering', args=[link]))
+
+    login_required(login_url='/accounts/login/')
     extended = EmployeeManagement.objects.filter(user=request.user)
     if extended.exists():
         employee = request.user.emp_user.is_employee
