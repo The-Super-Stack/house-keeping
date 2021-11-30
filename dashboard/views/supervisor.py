@@ -35,8 +35,11 @@ class DashboardView(ListView):
         else:
             stat = 'employee'
 
+        qr = WorkPlace.objects.all()
+
         inv = InvitationLink.objects.all()
 
+        context['qr'] = qr
         context['stat'] = stat
         context['link'] = inv
         return context
@@ -129,5 +132,13 @@ class CreateInvitationLink(CreateView):
     def dispatch(self, request, *args, **kwargs):
         return super(CreateInvitationLink, self).dispatch(request, *args, **kwargs)
 
+
+class ShowQRCode(DetailView):
+    model = WorkPlace
+    slug_field = 'qr_code'
+    slug_url_kwarg = 'qr_code'
+    query_pk_and_slug = True
+    template_name = 'd/qr.html'
+    context_object_name = 'code'
 
 

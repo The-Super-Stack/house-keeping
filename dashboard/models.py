@@ -29,7 +29,7 @@ class WorkPlace(models.Model):
     tower_name = models.CharField(max_length=255, verbose_name='Nama Tower : ')
     ground_name = models.CharField(max_length=255, verbose_name='Nama Lantai : ')
     job_area = models.CharField(max_length=255, verbose_name='Zona Kerja : ')
-    qr_code = models.TextField(verbose_name='unique code QR', default=generate_code())
+    qr_code = models.SlugField(verbose_name='unique code QR')
     qr_img = models.FileField(verbose_name='QR Code Image', upload_to='qr/', blank=True, null=True)
 
     def __str__(self):

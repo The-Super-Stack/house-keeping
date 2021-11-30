@@ -12,6 +12,7 @@ urlpatterns = [
 
 urlpatterns += [
     path('Supervisor', sv.DashboardView.as_view(), name='home'),
+    path('Supervisor/show_qr/<qr_code>', sv.ShowQRCode.as_view(), name='qr-code'),
     path('Supervisor/LokasiKerja', sv.CreateWorkPlace.as_view(), name='create-work'),
     path('Supervisor/BerikanPekerjaan', sv.create_job, name='create-job'),
     path('generate_link', sv.CreateInvitationLink.as_view(), name='links'),

@@ -12,7 +12,7 @@
 <a href="{% url 'dash:create-job' %}">Klik disini berikan pekerjaan</a>
 <br>
 {% for job in jobs %}
-{{ job }} <br>
+    {{ job }} <br>
 {% endfor %}
 <br> <br>
 <form action="{% url 'dash:delete-all' %}" method="post">
@@ -30,5 +30,12 @@
     {% csrf_token %}
     <button> Get new Link</button>
 </form>
+<br>
+<h4>see qr code</h4>
+<p>
+    {% for code in qr %}
+    <a href="{% url 'dash:qr-code' code.qr_code %}">{{ code.qr_code }}</a> <br>
+    {% endfor %}
+</p>
 </body>
 </html>

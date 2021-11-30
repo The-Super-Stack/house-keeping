@@ -21,20 +21,20 @@ def level_check(request):
         if linked:
             return HttpResponseRedirect(reverse('dash:manual-registering', args=[link]))
 
-    login_required(login_url='/accounts/login/')
-    extended = EmployeeManagement.objects.filter(user=request.user)
-    if extended.exists():
-        employee = request.user.emp_user.is_employee
-        supervisor = request.user.emp_user.is_supervisor
-        if employee and supervisor:
-            return redirect('dash:home')
-        elif employee:
-            return redirect('dash:emp')
-        else:
-            return render(request, 'd/home.html', {'stat': 'Mohon bersabar sampai akun mu diverifikasi'})
+    if request.user.is_authenticated:
+        extended = EmployeeManagement.objects.filter(user=request.user)
+        if extended.exists():
+            employee = request.user.emp_user.is_employee
+            supervisor = request.user.emp_user.is_supervisor
+            if employee and supervisor:
+                return redirect('dash:home')
+            elif employee:
+                return redirect('dash:emp')
+            else:
+                return render(request, 'd/home.html', {'stat': 'Mohon bersabar sampai akun mu diverifikasi'})
 
     logout(request)
-    return redirect('/accounts/login/')
+    return redirect('/accounts/login/?next=/')
 
 
 def register_manual(request):
