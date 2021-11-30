@@ -66,6 +66,15 @@ def register_manual(request):
                             # user.save()
                             e_form.instance.user = user
                             e_form.instance.supervisor = spv.user
+                            emp_data = EmployeeManagement.objects.all()
+                            code_data = [x.code for x in emp_data]
+                            code = spv_code_generator()
+                            while True:
+                                if code in code_data:
+                                    code = spv_code_generator()
+                                else:
+                                    break
+
                             e_form.instance.code = spv_code_generator()
                             # e_form.save()
                             return redirect('dash:registered')
@@ -117,7 +126,16 @@ def invitation_registering(request, link):
                     # user.save()
                     e_form.instance.user = user
                     e_form.instance.supervisor = spv.user
-                    e_form.instance.code = spv_code_generator()
+                    emp_data = EmployeeManagement.objects.all()
+                    code_data = [x.code for x in emp_data]
+                    code = spv_code_generator()
+                    while True:
+                        if code in code_data:
+                            code = spv_code_generator()
+                        else:
+                            break
+
+                    e_form.instance.code = code
                     # e_form.save()
                     return redirect('dash:registered')
             messages.warning(request, "Password yang kamu input tidaklah sama! Mohon Periksa ulang")

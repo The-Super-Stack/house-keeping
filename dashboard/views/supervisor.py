@@ -1,7 +1,4 @@
-import datetime
-
 from .main import *
-import time
 
 
 class CreateWorkPlace(CreateView):
@@ -13,7 +10,16 @@ class CreateWorkPlace(CreateView):
         return reverse('dash:home')
 
     def form_valid(self, form):
-        form.instance.qr_code = generate_code()
+        wp_data = WorkPlace.objects.all()
+        code_data = [x.qr_code for x in wp_data]
+        code = generate_code()
+        while True:
+            if code in code_data:
+                code = generate_code()
+            else:
+                break
+
+        form.instance.qr_code = code
         return super(CreateWorkPlace, self).form_valid(form)
 
     @method_decorator(login_required(login_url='/accounts/login/'))
@@ -72,12 +78,21 @@ def create_job(request):
             est_time = form.cleaned_data['estimated_time']
             assignment = form.cleaned_data['assignment']
             day = form.cleaned_data['for_day']
+            ass_data = AssignmentControl.objects.all()
+            code_data = [x.uid for x in ass_data]
+            code = assignment_code()
+            while True:
+                if code in code_data:
+                    code = assignment_code()
+                else:
+                    break
+
             for employee in emp_list:
                 get_worker = get_object_or_404(EmployeeManagement, pk=int(employee))
                 job = AssignmentControl.objects.create(
                     assignment=assignment, estimated_time=est_time,
                     worker=get_worker.user, for_day=day,
-                    given_by=request.user, uid=assignment_code()
+                    given_by=request.user, uid=code
                 )
                 job.save()
                 get_list = AssignmentList.objects.filter(for_job=assignment)
@@ -117,7 +132,16 @@ class CreateInvitationLink(CreateView):
     def form_valid(self, form):
         user = self.request.user
         valid_until = timezone.now() + datetime.timedelta(1)
-        form.instance.link = invitation_code()
+        inv_data = InvitationLink.objects.all()
+        code_data = [x.link for x in inv_data]
+        code = invitation_code()
+        while True:
+            if code in code_data:
+                code = invitation_code()
+            else:
+                break
+
+        form.instance.link = code
         form.instance.spv = user
         form.instance.valid_until = valid_until
         return super(CreateInvitationLink, self).form_valid(form)

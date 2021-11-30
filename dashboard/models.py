@@ -29,7 +29,7 @@ class WorkPlace(models.Model):
     tower_name = models.CharField(max_length=255, verbose_name='Nama Tower : ')
     ground_name = models.CharField(max_length=255, verbose_name='Nama Lantai : ')
     job_area = models.CharField(max_length=255, verbose_name='Zona Kerja : ')
-    qr_code = models.SlugField(verbose_name='unique code QR')
+    qr_code = models.SlugField(verbose_name='unique code QR', unique=True)
     qr_img = models.FileField(verbose_name='QR Code Image', upload_to='qr/', blank=True, null=True)
 
     def __str__(self):
@@ -37,6 +37,9 @@ class WorkPlace(models.Model):
 
     def naming(self):
         return self.job_area
+
+    def link(self):
+        return self.qr_code
 
     def save(self, *args, **kwargs):
         code_img = qrcode.make(self.qr_code)
@@ -70,7 +73,7 @@ class EmployeeManagement(models.Model):
     profile_img = models.FileField(upload_to='profile/')
     gender = models.CharField(max_length=10, choices=gender_choices, default='X')
     status = models.ForeignKey(WorkingStatus, on_delete=models.CASCADE, default=2)
-    code = models.CharField(max_length=255, default=spv_code_generator(), verbose_name='kode spv', blank=True)
+    code = models.SlugField(max_length=255, verbose_name='kode spv', blank=True, unique=True)
 
     def __str__(self):
         if self.is_employee and self.is_supervisor:
@@ -85,7 +88,7 @@ class EmployeeManagement(models.Model):
 
 class AssignmentControl(models.Model):
     assignment = models.ForeignKey(WorkPlace, on_delete=models.CASCADE, blank=True, verbose_name='Tugas yang akan diberikan : ')  # important
-    uid = models.SlugField(max_length=255, verbose_name='unique_id')
+    uid = models.SlugField(max_length=255, verbose_name='unique_id', unique=True)
     access_permission = models.BooleanField(default=False)
     given_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='spv', null=True, blank=True)  # important
     worker = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)  # important
